@@ -1,9 +1,10 @@
+import { Container } from './App.styled';
 import Searchbar from './Searchbar';
 
 export const App = () => {
   return (
-    <div>
+    <Container>
       <Searchbar />
-    </div>
+    </Container>
   );
 };
