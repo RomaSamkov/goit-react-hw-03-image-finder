@@ -1,4 +1,7 @@
+import ImageGalleryItem from 'components/ImageGalleryItem';
+import { nanoid } from 'nanoid';
 import { Component } from 'react';
+import { Gallery } from './ImageGallery.styled';
 
 class ImageGallery extends Component {
   state = {
@@ -19,8 +22,25 @@ class ImageGallery extends Component {
       }
     });
   }
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
   render() {
-    return <ul class="gallery"></ul>;
+    const { showModal, largeImage } = this.state;
+    return (
+      <Gallery onClick={this.toggleModal}>
+        {this.props.images.map(img => {
+          return (
+            <ImageGalleryItem
+              key={nanoid()}
+              smallImgURL={img.webformatURL}
+              id={img.id}
+            />
+          );
+        })}
+      </Gallery>
+    );
   }
 }
 
