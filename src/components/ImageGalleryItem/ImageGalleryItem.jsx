@@ -1,32 +1,23 @@
-import { Component } from 'react';
+import React from 'react';
+import s from './ImageGalleryItem.module.css';
 import PropTypes from 'prop-types';
-import { Item } from './ImageGalleryItem.styled';
 
-class ImageGalleryItem extends Component {
-  selectImage = (largeImageURL, tags) => {
-    this.props.onClick(largeImageURL, tags);
-  };
-
-  render() {
-    const { webformatURL, largeImageURL, tags } = this.props.image;
-    return (
-      <Item>
-        <img
-          src={webformatURL}
-          alt={tags}
-          onClick={() => this.selectImage(largeImageURL, tags)}
-        />
-      </Item>
-    );
-  }
-}
-
+const ImageGalleryItem = props => {
+  const { hit, onClick } = props;
+  return (
+    <li className={s.imageGalleryItem} id={hit.id} onClick={onClick}>
+      <img
+        src={hit.webformatURL}
+        alt={hit.tags}
+        data-src={hit.largeImageURL}
+        loading="lazy"
+        className={s.imageGalleryItem__image}
+      />
+    </li>
+  );
+};
 ImageGalleryItem.propTypes = {
-  image: PropTypes.shape({
-    webformatURL: PropTypes.string.isRequired,
-    largeImageURL: PropTypes.string.isRequired,
-    tags: PropTypes.string.isRequired,
-  }),
+  hit: PropTypes.shape().isRequired,
   onClick: PropTypes.func.isRequired,
 };
 

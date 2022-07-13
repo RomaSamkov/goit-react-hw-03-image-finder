@@ -1,129 +1,71 @@
-import { Component } from 'react';
-import { Container } from './App.styled';
-import Searchbar from './Searchbar';
-import Loader from './Loader';
-import Button from './Button';
-import Modal from './Modal';
-import fetchImages from 'services/api';
-import ImageGallery from './ImageGallery';
-import ErrorMessage from './ErrorMessage';
+import React, { Component } from 'react';
+import Modal from 'components/Modal/Modal';
+import Searchbar from 'components/Searchbar/Searchbar';
+import ImageInfo from 'components/ImageInfo/ImageInfo';
+import Button from 'components/Button/Button';
 
-const Status = {
-  IDLE: 'idle',
-  PENDING: 'pending',
-  RESOLVED: 'resolved',
-  REJECTED: 'rejected',
-};
+// import s from './App.module.css';
 
-export class App extends Component {
+class App extends Component {
   state = {
-    searchValue: null,
-    currentPage: 1,
-    images: [],
-    totalImages: null,
-    selectImage: null,
-    selectImageDescription: null,
-    status: Status.IDLE,
-    error: null,
-    scrollY: 0,
-    isModalOpen: false,
+    showModal: false,
+    searchQuery: '',
+    page: 1,
+    src: '',
+    alt: '',
+    moreVisible: false,
   };
 
-  async componentDidUpdate(prevProps, prevState) {
-    const { searchValue, currentPage, scrollY } = this.state;
-    if (
-      prevState.searchValue !== searchValue ||
-      prevState.currentPage !== currentPage
-    ) {
-      this.setState({ status: Status.PENDING });
-      try {
-        const response = await fetchImages(searchValue, currentPage);
-        this.setState(prevState => {
-          return {
-            images: [...prevState.images, ...response.hits],
-            totalImages: response.total,
-          };
-        });
-        this.setState({ status: Status.RESOLVED });
-      } catch (error) {
-        this.setState({ error });
-        this.setState({ status: Status.REJECTED });
-      }
-    }
-    if (currentPage > 1) {
-      window.scrollBy({
-        top: scrollY * 2,
-        behavior: 'smooth',
-      });
-    }
-  }
+  // Функция для смены состояния модального окна с видимого на невидимое и получения данных для показа в модалке
+  toggleModal = e => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
 
-  handleSubmit = value => {
-    this.setState({ searchValue: value, currentPage: 1, images: [] });
+    if (!this.state.showModal) {
+      this.setState({ src: e.target.dataset.src, alt: e.target.alt });
+    }
   };
 
-  handleLoadMore = () => {
-    const { height: galleryHeight } = document
-      .querySelector('#gallery')
-      .getBoundingClientRect();
+  //Функция для получения из формы текста введенного пользователем в инпут
+  submitForm = e => {
+    this.setState({ page: 1 });
+    this.setState({ searchQuery: e.value });
+  };
+
+  // Функция для показа или скрытия кнопки "Загрузить еще"
+  moreButtonRender = () => {
+    this.setState({ moreVisible: true });
+  };
+  moreButtonHide = () => {
+    this.setState({ moreVisible: false });
+  };
+
+  clickMoreButton = e => {
     this.setState(prevState => {
-      const prevPage = prevState.currentPage;
-      const prevScroll = prevState.scrollY;
-      return { currentPage: prevPage + 1, scrollY: prevScroll + galleryHeight };
-    });
-  };
-
-  openModal = (largeImage, tags) => {
-    this.setState({
-      isModalOpen: true,
-      selectImage: largeImage,
-      selectImageDescription: tags,
-    });
-  };
-
-  closeModal = () => {
-    this.setState({
-      isModalOpen: false,
-      selectImage: null,
-      selectImageDescription: null,
+      return { page: prevState.page + 1 };
     });
   };
 
   render() {
-    const {
-      status,
-      images,
-      isModalOpen,
-      totalImages,
-      selectImage,
-      selectImageDescription,
-    } = this.state;
+    const { showModal, moreVisible, searchQuery, page, src, alt } = this.state;
     return (
-      <Container>
-        <Searchbar onSubmit={value => this.handleSubmit(value)}></Searchbar>
-        <>
-          {images.length > 0 && (
-            <>
-              <ImageGallery
-                images={images}
-                onClick={(largeImage, tags) => this.openModal(largeImage, tags)}
-              />
-              {status === Status.RESOLVED && images.length < totalImages && (
-                <Button onClick={() => this.handleLoadMore()}>Load more</Button>
-              )}
-            </>
-          )}
-          {status === Status.PENDING && <Loader />}
-        </>
-        {status === Status.REJECTED && <ErrorMessage />}
-        {isModalOpen && (
-          <Modal
-            image={selectImage}
-            description={selectImageDescription}
-            onClose={this.closeModal}
-          />
+      <>
+        <Searchbar onSubmit={this.submitForm} />
+        <ImageInfo
+          searchQuery={searchQuery}
+          page={page}
+          onClick={this.toggleModal}
+          moreButtonRender={this.moreButtonRender}
+          moreButtonHide={this.moreButtonHide}
+        />
+        {moreVisible && <Button onClick={this.clickMoreButton} />}
+
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <img src={src} alt={alt} />
+          </Modal>
         )}
-      </Container>
+      </>
     );
   }
 }
+export default App;

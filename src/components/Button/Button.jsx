@@ -1,15 +1,16 @@
+import s from './Button.module.css';
 import PropTypes from 'prop-types';
-import Wrap from './Button.styled';
 
-const Button = ({ children, onClick }) => (
-  <Wrap type="button" onClick={onClick}>
-    {children}
-  </Wrap>
-);
-
+const Button = ({ onClick }) => {
+  return (
+    <div className={s.wrapper}>
+      <button type="button" className={s.button} onClick={onClick}>
+        Load more
+      </button>
+    </div>
+  );
+};
 Button.propTypes = {
-  children: PropTypes.node.isRequired,
   onClick: PropTypes.func.isRequired,
 };
-
 export default Button;

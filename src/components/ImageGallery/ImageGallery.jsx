@@ -1,21 +1,21 @@
+import React from 'react';
+import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
+import s from './ImageGallery.module.css';
 import PropTypes from 'prop-types';
-import { Gallery } from './ImageGallery.styled';
-import ImageGalleryItem from 'components/ImageGalleryItem';
 
-const ImageGallery = ({ images, onClick }) => (
-  <Gallery id="gallery">
-    {images.map(image => (
-      <ImageGalleryItem key={image.id} image={image} onClick={onClick} />
-    ))}
-  </Gallery>
-);
+const ImageGallery = props => {
+  const { hits, onClick } = props;
 
-ImageGallery.propTypes = {
-  images: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    })
-  ).isRequired,
+  return (
+    <ul className={s.imageGallery}>
+      {hits.map(hit => {
+        return <ImageGalleryItem key={hit.id} hit={hit} onClick={onClick} />;
+      })}
+    </ul>
+  );
 };
-
+ImageGallery.propTypes = {
+  hits: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  onClick: PropTypes.func.isRequired,
+};
 export default ImageGallery;
