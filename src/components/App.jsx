@@ -1,76 +1,128 @@
 import { Component } from 'react';
-import { toast } from 'react-toastify';
 import { Container } from './App.styled';
-import ImageGallery from './ImageGallery';
 import Searchbar from './Searchbar';
+import Loader from './Loader';
+import Button from './Button';
+import Modal from './Modal';
+import fetchImages from 'services/api';
+import ImageGallery from './ImageGallery';
+import ErrorMessage from './ErrorMessage';
+
+const Status = {
+  IDLE: 'idle',
+  PENDING: 'pending',
+  RESOLVED: 'resolved',
+  REJECTED: 'rejected',
+};
 
 export class App extends Component {
   state = {
-    URL: 'https://pixabay.com/api/',
-    API_KEY: '27155173-9deaa55e537d9ae9b6e54e2b2',
-    pictures: [],
-    error: '',
-    status: 'idle',
-    page: 1,
-    query: '',
-    totalHits: null,
+    searchValue: null,
+    currentPage: 1,
+    images: [],
+    totalImages: null,
+    selectImage: null,
+    selectImageDescription: null,
+    status: Status.IDLE,
+    error: null,
+    scrollY: 0,
+    isModalOpen: false,
   };
 
-  fetchImg = () => {
-    return fetch(
-      `${this.state.URL}?q=${this.state.query}&page=${this.state.page}&key=${this.state.API_KEY}&image_type=photo&orientation=horizontal&per_page=12`
-    )
-      .then(response => {
-        if (response.ok) {
-          return response.json();
-        }
-        return Promise.reject(new Error('Oops... failed to find any images'));
-      })
-      .then(pictures => {
-        if (!pictures.hits) {
-          toast.error('Change!!!');
-        }
-
-        const selectedDataView = pictures.hits.map(
-          ({ id, largeImageURL, webformatURL }) => {
-            return { id, largeImageURL, webformatURL };
-          }
-        );
+  async componentDidUpdate(prevProps, prevState) {
+    const { searchValue, currentPage, scrollY } = this.state;
+    if (
+      prevState.searchValue !== searchValue ||
+      prevState.currentPage !== currentPage
+    ) {
+      this.setState({ status: Status.PENDING });
+      try {
+        const response = await fetchImages(searchValue, currentPage);
         this.setState(prevState => {
           return {
-            pictures: [...prevState.pictures, ...selectedDataView],
-            status: 'resolved',
-            totlHits: pictures.total,
+            images: [...prevState.images, ...response.hits],
+            totalImages: response.total,
           };
         });
-      })
-      .catch(error => this.setState({ error, status: 'rejected' }));
-  };
-
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.query !== prevState.query) {
-      this.setState({ status: 'pending', pictures: [], page: 1 });
-      this.fetchImg();
+        this.setState({ status: Status.RESOLVED });
+      } catch (error) {
+        this.setState({ error });
+        this.setState({ status: Status.REJECTED });
+      }
+    }
+    if (currentPage > 1) {
+      window.scrollBy({
+        top: scrollY * 2,
+        behavior: 'smooth',
+      });
     }
   }
 
-  handleFormSubmit = query => {
-    this.setState({ query });
+  handleSubmit = value => {
+    this.setState({ searchValue: value, currentPage: 1, images: [] });
   };
 
-  handlLoadMore = () => {
+  handleLoadMore = () => {
+    const { height: galleryHeight } = document
+      .querySelector('#gallery')
+      .getBoundingClientRect();
     this.setState(prevState => {
-      // console.log('prevState', prevState);
-      return { page: prevState.page + 1 };
+      const prevPage = prevState.currentPage;
+      const prevScroll = prevState.scrollY;
+      return { currentPage: prevPage + 1, scrollY: prevScroll + galleryHeight };
+    });
+  };
+
+  openModal = (largeImage, tags) => {
+    this.setState({
+      isModalOpen: true,
+      selectImage: largeImage,
+      selectImageDescription: tags,
+    });
+  };
+
+  closeModal = () => {
+    this.setState({
+      isModalOpen: false,
+      selectImage: null,
+      selectImageDescription: null,
     });
   };
 
   render() {
-    const { pictures, status, totalHits } = this.state;
+    const {
+      status,
+      images,
+      isModalOpen,
+      totalImages,
+      selectImage,
+      selectImageDescription,
+    } = this.state;
     return (
       <Container>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery images={pictures} />
+        <Searchbar onSubmit={value => this.handleSubmit(value)}></Searchbar>
+        <>
+          {images.length > 0 && (
+            <>
+              <ImageGallery
+                images={images}
+                onClick={(largeImage, tags) => this.openModal(largeImage, tags)}
+              />
+              {status === Status.RESOLVED && images.length < totalImages && (
+                <Button onClick={() => this.handleLoadMore()}>Load more</Button>
+              )}
+            </>
+          )}
+          {status === Status.PENDING && <Loader />}
+        </>
+        {status === Status.REJECTED && <ErrorMessage />}
+        {isModalOpen && (
+          <Modal
+            image={selectImage}
+            description={selectImageDescription}
+            onClose={this.closeModal}
+          />
+        )}
       </Container>
     );
   }

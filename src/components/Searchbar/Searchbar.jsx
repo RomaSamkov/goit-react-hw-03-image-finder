@@ -1,47 +1,42 @@
-import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { toast } from 'react-toastify';
-import {
-  Button,
-  ButtonLabel,
-  SearchBar,
-  SearchForm,
-  SearchFormInput,
-} from './Searchbar.styled';
+import { Component } from 'react';
+import { SearchForm, Bar } from './Searchbar.styled';
+import { FiSearch } from 'react-icons/fi';
 
 class Searchbar extends Component {
-  state = { query: '' };
-
-  handleInputChange = event => {
-    this.setState({ query: event.target.value });
+  state = {
+    inputValue: '',
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
-    if (this.state.query.trim() === '') {
-      toast.error('Enter your search query');
-      return;
-    }
-    this.props.onSubmit(this.state.query);
+  handleInputChange = e => {
+    this.setState({ inputValue: e.target.value });
   };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.onSubmit(this.state.inputValue);
+  };
+
   render() {
+    const { inputValue } = this.state;
     return (
-      <SearchBar>
+      <Bar>
         <SearchForm onSubmit={this.handleSubmit}>
-          <Button type="submit">
-            <ButtonLabel>Search</ButtonLabel>
-          </Button>
+          <button type="submit">
+            <FiSearch size="24"></FiSearch>
+            <span>Search</span>
+          </button>
 
-          <SearchFormInput
-            onInput={this.handleInputChange}
-            value={this.state.query}
+          <input
             type="text"
-            autocomplete="off"
+            autoComplete="off"
             autoFocus
             placeholder="Search images and photos"
+            value={inputValue}
+            onChange={this.handleInputChange}
           />
         </SearchForm>
-      </SearchBar>
+      </Bar>
     );
   }
 }
