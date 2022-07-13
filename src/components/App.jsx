@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Modal from 'components/Modal/Modal';
 import Searchbar from 'components/Searchbar/Searchbar';
 import ImageInfo from 'components/ImageInfo/ImageInfo';
