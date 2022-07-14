@@ -27,6 +27,7 @@ class ImageInfo extends Component {
     moreButtonHide: PropTypes.func.isRequired,
   };
 
+  // Асинхронная функция, которая сначала сравнивает предыдущий и следующий пропсы и если они отличаются, делает запрос на АРI
   async componentDidUpdate(prevProps, prevState) {
     const prevSearchQuery = prevProps.searchQuery;
     const nextSearchQuery = this.props.searchQuery;
@@ -38,7 +39,9 @@ class ImageInfo extends Component {
         nextSearchQuery.trim().length > 0) ||
       nextPage > prevPage
     ) {
-      this.setState({ status: Status.PENDING });
+      this.setState({
+        status: Status.PENDING,
+      });
       this.props.moreButtonHide();
       try {
         const { totalHits, hits } = await getImages(nextSearchQuery, nextPage);
