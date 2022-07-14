@@ -15,7 +15,6 @@ export class App extends Component {
     moreVisible: false,
   };
 
-  // Функция для смены состояния модального окна с видимого на невидимое и получения данных для показа в модалке
   toggleModal = e => {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
 
@@ -24,17 +23,15 @@ export class App extends Component {
     }
   };
 
-  //Функция для получения из формы текста введенного пользователем в инпут
   submitForm = e => {
     this.setState({ page: 1 });
     this.setState({ searchQuery: e.value });
   };
 
-  // Функция для показа или скрытия кнопки "Загрузить еще"
-  moreButtonRender = () => {
+  showMoreButton = () => {
     this.setState({ moreVisible: true });
   };
-  moreButtonHide = () => {
+  hideMoreButton = () => {
     this.setState({ moreVisible: false });
   };
 
@@ -53,8 +50,8 @@ export class App extends Component {
           searchQuery={searchQuery}
           page={page}
           onClick={this.toggleModal}
-          moreButtonRender={this.moreButtonRender}
-          moreButtonHide={this.moreButtonHide}
+          showMoreButton={this.showMoreButton}
+          hideMoreButton={this.hideMoreButton}
         />
         {moreVisible && <Button onClick={this.clickMoreButton} />}
 

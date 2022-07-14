@@ -23,11 +23,10 @@ class ImageInfo extends Component {
     onClick: PropTypes.func.isRequired,
     searchQuery: PropTypes.string.isRequired,
     page: PropTypes.number.isRequired,
-    moreButtonRender: PropTypes.func.isRequired,
-    moreButtonHide: PropTypes.func.isRequired,
+    showMoreButton: PropTypes.func.isRequired,
+    hideMoreButton: PropTypes.func.isRequired,
   };
 
-  // Асинхронная функция, которая сначала сравнивает предыдущий и следующий пропсы и если они отличаются, делает запрос на АРI
   async componentDidUpdate(prevProps, prevState) {
     const prevSearchQuery = prevProps.searchQuery;
     const nextSearchQuery = this.props.searchQuery;
@@ -42,7 +41,7 @@ class ImageInfo extends Component {
       this.setState({
         status: Status.PENDING,
       });
-      this.props.moreButtonHide();
+      this.props.hideMoreButton();
       try {
         const { totalHits, hits } = await getImages(nextSearchQuery, nextPage);
         if (totalHits === 0) {
@@ -51,10 +50,10 @@ class ImageInfo extends Component {
           );
         }
         if (totalHits === this.state.hits.length + hits.length) {
-          this.props.moreButtonHide();
+          this.props.hideMoreButton();
         }
         if (totalHits > this.state.hits.length + hits.length) {
-          this.props.moreButtonRender();
+          this.props.showMoreButton();
         }
         if (nextPage > 1) {
           this.setState({
@@ -75,7 +74,7 @@ class ImageInfo extends Component {
           error,
           status: Status.REJECTED,
         });
-        this.props.moreButtonHide();
+        this.props.hideMoreButton();
         Notify.failure(`Sorry, something went wrong.`);
       }
     }
@@ -84,7 +83,7 @@ class ImageInfo extends Component {
   render() {
     const { hits, status } = this.state;
     if (status === 'idle') {
-      return <div> </div>;
+      return;
     }
     if (status === 'pending') {
       return (
@@ -95,7 +94,7 @@ class ImageInfo extends Component {
       );
     }
     if (status === 'rejected') {
-      return <div></div>;
+      return;
     }
     if (status === 'resolved') {
       return (
