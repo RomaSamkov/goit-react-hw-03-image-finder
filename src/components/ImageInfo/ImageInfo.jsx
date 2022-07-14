@@ -1,9 +1,10 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import { getImages } from 'services/api';
 import ImageGallery from 'components/ImageGallery';
 import Loader from 'components/Loader';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Status = {
   IDLE: 'idle',
@@ -45,8 +46,8 @@ class ImageInfo extends Component {
       try {
         const { totalHits, hits } = await getImages(nextSearchQuery, nextPage);
         if (totalHits === 0) {
-          Notify.failure(
-            `Sorry, images with title ${nextSearchQuery} missing. Try other words.`
+          toast.error(
+            `Failed to find any images with name ${nextSearchQuery}. Try other words.`
           );
         }
         if (totalHits === this.state.hits.length + hits.length) {
@@ -75,7 +76,7 @@ class ImageInfo extends Component {
           status: Status.REJECTED,
         });
         this.props.hideMoreButton();
-        Notify.failure(`Sorry, something went wrong.`);
+        toast.error(`Sorry, something went wrong.`);
       }
     }
   }

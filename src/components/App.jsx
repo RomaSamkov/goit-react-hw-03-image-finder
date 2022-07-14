@@ -4,6 +4,8 @@ import Button from './Button';
 import ImageInfo from './ImageInfo';
 import Modal from './Modal';
 import Searchbar from './Searchbar';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export class App extends Component {
   state = {
@@ -60,6 +62,7 @@ export class App extends Component {
             <img src={src} alt={alt} />
           </Modal>
         )}
+        <ToastContainer />
       </Container>
     );
   }
