@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ButtonForm, ButtonLabel, Form, Input } from './SearchForm.styled';
+import { FaSearch } from 'react-icons/fa';
 
 class SearchForm extends Component {
   state = { value: '' };
@@ -22,7 +23,8 @@ class SearchForm extends Component {
   render() {
     return (
       <Form onSubmit={this.handleSubmit}>
-        <ButtonForm type="button" onSubmit={this.handleSubmit}>
+        <ButtonForm type="submit" onSubmit={this.handleSubmit}>
+          <FaSearch size={30}></FaSearch>
           <ButtonLabel>Search</ButtonLabel>
         </ButtonForm>
 
