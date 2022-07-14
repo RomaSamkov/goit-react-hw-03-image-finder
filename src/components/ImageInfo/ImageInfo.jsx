@@ -20,13 +20,6 @@ class ImageInfo extends Component {
     totalHits: null,
     hits: [],
   };
-  static propTypes = {
-    onClick: PropTypes.func.isRequired,
-    searchQuery: PropTypes.string.isRequired,
-    page: PropTypes.number.isRequired,
-    showMoreButton: PropTypes.func.isRequired,
-    hideMoreButton: PropTypes.func.isRequired,
-  };
 
   async componentDidUpdate(prevProps, prevState) {
     const prevSearchQuery = prevProps.searchQuery;
@@ -106,5 +99,13 @@ class ImageInfo extends Component {
     }
   }
 }
+
+ImageInfo.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  searchQuery: PropTypes.string.isRequired,
+  page: PropTypes.number.isRequired,
+  showMoreButton: PropTypes.func.isRequired,
+  hideMoreButton: PropTypes.func.isRequired,
+};
 
 export default ImageInfo;

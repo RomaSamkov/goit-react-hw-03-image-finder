@@ -6,10 +6,6 @@ import { FaSearch } from 'react-icons/fa';
 class SearchForm extends Component {
   state = { value: '' };
 
-  static propTypes = {
-    onSubmit: PropTypes.func.isRequired,
-  };
-
   handleChange = e => {
     const { value } = e.currentTarget;
     this.setState({ value: value });
@@ -41,5 +37,9 @@ class SearchForm extends Component {
     );
   }
 }
+
+SearchForm.propTypes = {
+  onSubmit: PropTypes.func.isRequired,
+};
 
 export default SearchForm;

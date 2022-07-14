@@ -8,20 +8,15 @@ const modalRoot = document.querySelector('#modalRoot');
 class Modal extends Component {
   state = {};
 
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-    children: PropTypes.node,
-  };
-
   componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
+    window.addEventListener('keydown', this.handleKeyEscape);
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
+    window.removeEventListener('keydown', this.handleKeyEscape);
   }
 
-  handleKeyDown = e => {
+  handleKeyEscape = e => {
     if (e.code === 'Escape') {
       this.props.onClose();
     }
@@ -35,12 +30,17 @@ class Modal extends Component {
 
   render() {
     return createPortal(
-      <Overlay className="Overlay" onClick={this.handleBackdropClick}>
-        <ModalContent className="Modal">{this.props.children}</ModalContent>
+      <Overlay onClick={this.handleBackdropClick}>
+        <ModalContent>{this.props.children}</ModalContent>
       </Overlay>,
       modalRoot
     );
   }
 }
+
+Modal.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  children: PropTypes.node,
+};
 
 export default Modal;

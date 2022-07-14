@@ -3,7 +3,7 @@ import { Wrapper } from './Loader.styled';
 
 const Loader = () => {
   return (
-    <Wrapper className="wrapper">
+    <Wrapper>
       <BallTriangle
         height="200"
         width="200"
